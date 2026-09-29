@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Módulo de Facturación</h2>
+    
+    <form method="POST" action="" class="mb-4 p-3 border rounded bg-light">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            {{ form.cliente.label(class="form-label") }}
+            {{ form.cliente(class="form-select") }}
+            {% for error in form.cliente.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.producto.label(class="form-label") }}
+            {{ form.producto(class="form-select") }}
+            {% for error in form.producto.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.cantidad.label(class="form-label") }}
+            {{ form.cantidad(class="form-control") }}
+            {% for error in form.cantidad.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.forma_pago.label(class="form-label") }}
+            {{ form.forma_pago(class="form-select") }}
+            {% for error in form.forma_pago.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        {{ form.submit(class="btn btn-success") }}
+    </form>
+
+    <hr class="my-4">
+
+    <h3>Historial de Facturas</h3>
+    <table class="table table-striped mt-3 align-middle">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Productos</th>
+                <th>Subtotal</th>
+                <th>IVA ({{ iva_porcentaje }}%)</th>
+                <th>Total General</th>
+                <th>Pago</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for factura in facturas %}
+            <tr>
+                <td>{{ factura.id }}</td>
+                <td>{{ factura.cliente }}</td>
+                <td>{{ factura.fecha }}</td>
+                <td><span class="badge bg-secondary">{{ factura.num_items }} producto(s)</span></td>
+                <td>${{ "%.2f"|format(factura.subtotal) }}</td>
+                <td>${{ "%.2f"|format(factura.iva) }}</td>
+                <td class="fw-bold">${{ "%.2f"|format(factura.total_general) }}</td>
+                <td>
+                    {{ factura.forma_pago }}
+                    {% if factura.pago and factura.forma_pago == 'Efectivo' and factura.pago.efectivo_recibido is not none %}
+                        <div class="small text-secondary">Recibido ${{ "%.2f"|format(factura.pago.efectivo_recibido) }}<br>Vuelto ${{ "%.2f"|format(factura.pago.vuelto or 0) }}</div>
+                    {% elif factura.pago and factura.forma_pago == 'Tarjeta' %}
+                        <div class="small text-secondary">{{ factura.pago.tarjeta_marca }} •••• {{ factura.pago.tarjeta_ultimos4 }}</div>
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- BOTÓN AZUL "VER DETALLES" -->
+                    <button type="button" class="btn btn-info btn-sm text-white fw-bold me-1" data-bs-toggle="modal" data-bs-target="#modalFactura{{ factura.id }}">
+                        Ver
+                    </button>
+
+                    <!-- BOTÓN ELIMINAR QUE YA TENÍAS -->
+                    <a href="{{ url_for('eliminar_factura', id=factura.id) }}" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar esta factura?')">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- VENTANAS FLOTANTES (MODALES) CON EL DETALLE DE LA FACTURA -->
+{% for factura in facturas %}
+<div class="modal fade" id="modalFactura{{ factura.id }}" tabindex="-1" aria-labelledby="modalLabel{{ factura.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold" id="modalLabel{{ factura.id }}">
+            Detalle de Factura #{{ factura.id }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="text-center mb-3">
+            <h4 class="fw-bold mb-0 text-dark">Aroma y Café</h4>
+            <small class="text-secondary">Comprobante Digital de Venta</small>
+        </div>
+        <hr class="text-muted">
+
+        <div class="mb-2">
+            <strong>Cliente:</strong> <span class="text-capitalize">{{ factura.cliente }}</span>
+        </div>
+        <div class="mb-2">
+            <strong>Fecha:</strong> {{ factura.fecha }}
+        </div>
+        <div class="mb-2">
+            <strong>Forma de Pago:</strong> {{ factura.forma_pago }}
+        </div>
+
+        {% if factura.pago and factura.forma_pago == 'Tarjeta' %}
+        <div class="p-2 mb-2 rounded border bg-white small">
+            <div class="fw-bold mb-1">💳 Datos de la tarjeta</div>
+            <div><strong>Titular:</strong> <span class="text-capitalize">{{ factura.pago.tarjeta_titular }}</span></div>
+            <div><strong>Tipo:</strong> {{ factura.pago.tarjeta_tipo }} · {{ factura.pago.tarjeta_marca }}</div>
+            <div><strong>Número:</strong> •••• •••• •••• {{ factura.pago.tarjeta_ultimos4 }}</div>
+            <div><strong>Vence:</strong> {{ factura.pago.tarjeta_vencimiento }}</div>
+            <div><strong>Fecha del pago:</strong> {{ factura.fecha }}</div>
+        </div>
+        {% endif %}
+
+        <!-- Tabla de productos comprados en esta factura -->
+        <table class="table table-sm table-bordered bg-white mt-3 mb-3">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th class="text-center">Cantidad</th>
+                    <th class="text-end">Precio Unitario</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in factura.productos_factura %}
+                <tr>
+                    <td>{{ item.producto_id }}</td>
+                    <td>{{ item.nombre }}</td>
+                    <td class="text-center">{{ item.cantidad }}</td>
+                    <td class="text-end">${{ "%.2f"|format(item.precio_unitario) }}</td>
+                    <td class="text-end">${{ "%.2f"|format(item.subtotal) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="bg-white p-3 rounded border">
+            <div class="d-flex justify-content-between">
+                <span>Subtotal:</span>
+                <span>${{ "%.2f"|format(factura.subtotal) }}</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span>IVA ({{ iva_porcentaje }}%):</span>
+                <span>${{ "%.2f"|format(factura.iva) }}</span>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fs-5 fw-bold text-dark">Total a Pagar:</span>
+                <span class="fs-4 fw-bold text-success">${{ "%.2f"|format(factura.total_general) }}</span>
+            </div>
+            {% if factura.pago and factura.forma_pago == 'Efectivo' and factura.pago.efectivo_recibido is not none %}
+            <hr class="my-2">
+            <div class="d-flex justify-content-between">
+                <span>Efectivo recibido:</span>
+                <span>${{ "%.2f"|format(factura.pago.efectivo_recibido) }}</span>
+            </div>
+            <div class="d-flex justify-content-between fw-bold">
+                <span>Vuelto:</span>
+                <span class="text-primary">${{ "%.2f"|format(factura.pago.vuelto or 0) }}</span>
+            </div>
+            {% endif %}
+        </div>
+      </div>
+      <div class="modal-footer bg-white">
+        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary fw-bold" onclick="window.print()">Imprimir Recibo</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

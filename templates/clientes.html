@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+<div class="bg-white p-4 rounded shadow mb-5">
+    <h2>Gestión de Clientes</h2>
+    <p class="text-muted">Administra la información de los clientes registrados en el sistema.</p>
+    <hr>
+    
+    <form class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label class="form-label">Nombre del Cliente</label>
+            <input type="text" class="form-control" placeholder="Ej. Juan Pérez" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Correo Electrónico</label>
+            <input type="email" class="form-control" placeholder="correo@ejemplo.com" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" placeholder="0991234567" required>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">Guardar</button>
+        </div>
+    </form>
+
+    <h5 class="mt-4">Lista de Clientes</h5>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>María Gómez</td>
+                    <td>maria@gmail.com</td>
+                    <td>0998765432</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+{% endblock %}

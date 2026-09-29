@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Facturación - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Título del Módulo -->
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-white">Módulo de Facturación</h2>
+    </div>
+
+    <!-- Formulario de Generación de Factura -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow border-0 rounded-3 p-4 bg-white">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Seleccionar Cliente</label>
+                        {{ form.cliente_id(class="form-select") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Seleccionar Producto</label>
+                        {{ form.producto_id(class="form-select") }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Cantidad</label>
+                        {{ form.cantidad(class="form-control", placeholder="Ingresa la cantidad") }}
+                    </div>
+
+                    {{ form.submit(class="btn btn-success fw-bold w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial de Facturas -->
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow border-0 rounded-3 bg-white p-3">
+                <h4 class="fw-bold mb-3 px-2">Historial de Facturas</h4>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Cliente</th>
+                                <th>Producto / Servicio</th>
+                                <th class="text-center">Cantidad</th>
+                                <th class="text-end">Total ($)</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if facturas %}
+                                {% for factura in facturas %}
+                                <tr>
+                                    <td class="fw-bold">{{ factura.id }}</td>
+                                    <td>{{ factura.cliente }}</td>
+                                    <td>{{ factura.producto }}</td>
+                                    <td class="text-center">{{ factura.cantidad }}</td>
+                                    <td class="text-end fw-bold text-success">${{ "%.2f"|format(factura.total) }}</td>
+                                    <td class="text-center">
+                                        <!-- Botón Ver Detalles (Abre el modal) -->
+                                        <button type="button" class="btn btn-sm btn-info text-white me-1 fw-bold" data-bs-toggle="modal" data-bs-target="#modalFactura{{ factura.id }}">
+                                            Ver
+                                        </button>
+                                        
+                                        <!-- Botón Eliminar -->
+                                        <a href="{{ url_for('eliminar_factura', id=factura.id) }}" class="btn btn-sm btn-danger fw-bold" onclick="return confirm('¿Seguro de eliminar esta factura?')">
+                                            Eliminar
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No hay facturas registradas.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Ventana Flotante (Modal) con los Detalles de cada Factura -->
+{% for factura in facturas %}
+<div class="modal fade" id="modalFactura{{ factura.id }}" tabindex="-1" aria-labelledby="modalLabel{{ factura.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold" id="modalLabel{{ factura.id }}">
+            Comprobante de Venta #{{ factura.id }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="text-center mb-3">
+            <h4 class="fw-bold mb-0 text-dark">Aroma y Café</h4>
+            <small class="text-secondary">RUC: 1790000000001 | Matriz: Centro</small>
+        </div>
+        <hr class="text-muted">
+        
+        <div class="mb-2">
+            <strong>Cliente:</strong> <span class="text-capitalize">{{ factura.cliente }}</span>
+        </div>
+        <div class="mb-2">
+            <strong>Producto Adquirido:</strong> {{ factura.producto }}
+        </div>
+        <div class="mb-2">
+            <strong>Cantidad:</strong> {{ factura.cantidad }}
+        </div>
+        <div class="mb-2">
+            <strong>Precio Unitario:</strong> ${{ "%.2f"|format(factura.total / factura.cantidad) if factura.cantidad > 0 else '0.00' }}
+        </div>
+        <hr class="text-muted">
+        
+        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded border">
+            <span class="fs-5 fw-bold text-dark">Total a Pagar:</span>
+            <span class="fs-4 fw-bold text-success">${{ "%.2f"|format(factura.total) }}</span>
+        </div>
+      </div>
+      <div class="modal-footer bg-white">
+        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary fw-bold" onclick="window.print()">Imprimir Recibo</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Carrito - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+
+<section class="page-hero">
+    <div class="container py-3 text-center">
+        <h1>Tu Carrito</h1>
+        <p>Revisa tus productos, ajusta cantidades y completa tus datos para facturar todo tu pedido en un solo paso.</p>
+    </div>
+</section>
+
+<div class="container py-4">
+
+    {% if items %}
+    <div class="row g-4">
+
+        <!-- Columna izquierda: lista de productos del carrito -->
+        <div class="col-12 col-lg-7">
+            <div class="glass-card">
+                <h3 class="mb-3">Productos ({{ items|length }})</h3>
+
+                {% for item in items %}
+                <div class="carrito-item d-flex align-items-center gap-3 py-3 {% if not loop.last %}border-bottom{% endif %}">
+
+                    <div style="width: 64px; height: 64px; flex-shrink: 0; border-radius: 10px; overflow: hidden; background: #f8f9fa;">
+                        {% if item.imagen and item.imagen.strip() != "" %}
+                            <img src="{{ url_for('static', filename='img/' ~ item.imagen) }}" alt="{{ item.nombre }}"
+                                 class="w-100 h-100" style="object-fit: cover;"
+                                 onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/default.svg') }}';">
+                        {% endif %}
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold mb-1">{{ item.nombre }}</h6>
+                        <span class="text-secondary small">${{ "%.2f"|format(item.precio) }} c/u</span>
+                    </div>
+
+                    <!-- Cambiar cantidad: al modificarla se envía automáticamente -->
+                    <form method="POST" action="{{ url_for('actualizar_carrito', producto_id=item.id) }}" class="d-flex align-items-center gap-2">
+                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.stock }}"
+                               class="form-control form-control-sm text-center" style="width: 60px;"
+                               onchange="this.form.submit()">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Actualizar cantidad">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11A8 8 0 1 0 6.5 17.5L4 20M4 20v-4M4 20h4"/></svg>
+                        </button>
+                    </form>
+
+                    <div class="text-end" style="min-width: 80px;">
+                        <span class="fw-bold">${{ "%.2f"|format(item.subtotal) }}</span>
+                    </div>
+
+                    <!-- Eliminar ítem -->
+                    <form method="POST" action="{{ url_for('eliminar_del_carrito', producto_id=item.id) }}">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar del carrito">&times;</button>
+                    </form>
+
+                </div>
+                {% endfor %}
+
+                <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top">
+                    <span class="fs-5">Subtotal</span>
+                    <span class="fs-5 fw-bold">${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span>IVA ({{ iva_porcentaje }}%)</span>
+                    <span class="fw-bold">${{ "%.2f"|format(iva) }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Total</span>
+                    <span class="fs-4 fw-bold text-success">${{ "%.2f"|format(total_general) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: datos del cliente, facturación y confirmación -->
+        <div class="col-12 col-lg-5">
+            <div class="glass-card">
+                <h3 class="mb-3">Datos de facturación</h3>
+                <form method="POST" action="{{ url_for('checkout_carrito') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.cedula.label(class="form-label") }}
+                        {{ form.cedula(class="form-control", placeholder="09XXXXXXXX") }}
+                        {% for error in form.cedula.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.nombre.label(class="form-label") }}
+                        {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
+                        {% for error in form.nombre.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.correo.label(class="form-label") }}
+                        {{ form.correo(class="form-control", placeholder="tucorreo@ejemplo.com") }}
+                        {% for error in form.correo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.telefono.label(class="form-label") }}
+                        {{ form.telefono(class="form-control", placeholder="09XXXXXXXX") }}
+                        {% for error in form.telefono.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.forma_pago.label(class="form-label") }}
+                        {{ form.forma_pago(class="form-select") }}
+                        {% for error in form.forma_pago.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    </div>
+
+                    <!-- EFECTIVO: monto con el que paga y vuelto en vivo -->
+                    <div id="bloqueEfectivo" class="mb-3 p-3 rounded" style="background: rgba(25,135,84,.07); border: 1px dashed #198754;">
+                        {{ form.efectivo_recibido.label(class="form-label fw-bold") }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form.efectivo_recibido(class="form-control", placeholder="Ej: 20.00", inputmode="decimal", autocomplete="off") }}
+                        </div>
+                        <div class="form-text">El vuelto se verá en la factura. Si lo dejas vacío se toma como pago exacto.</div>
+                    </div>
+
+                    <!-- TARJETA: se despliega solo al elegir Tarjeta -->
+                    <div id="bloqueTarjeta" class="mb-3 p-3 rounded d-none" style="background: rgba(13,110,253,.06); border: 1px dashed #0d6efd;">
+                        <div class="mb-2">
+                            {{ form.tarjeta_tipo.label(class="form-label") }}
+                            {{ form.tarjeta_tipo(class="form-select") }}
+                        </div>
+                        <div class="mb-2">
+                            {{ form.tarjeta_titular.label(class="form-label") }}
+                            {{ form.tarjeta_titular(class="form-control", placeholder="Como aparece en la tarjeta", autocomplete="cc-name") }}
+                        </div>
+                        <div class="mb-2">
+                            {{ form.tarjeta_numero.label(class="form-label") }}
+                            <div class="input-group">
+                                {{ form.tarjeta_numero(class="form-control", placeholder="0000 0000 0000 0000", inputmode="numeric", autocomplete="cc-number", maxlength="23") }}
+                                <span class="input-group-text" id="marcaTarjeta">💳</span>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                {{ form.tarjeta_vencimiento.label(class="form-label") }}
+                                {{ form.tarjeta_vencimiento(class="form-control", placeholder="MM/AA", inputmode="numeric", autocomplete="cc-exp", maxlength="5") }}
+                            </div>
+                            <div class="col-6">
+                                {{ form.tarjeta_cvv.label(class="form-label") }}
+                                {{ form.tarjeta_cvv(class="form-control", placeholder="123", inputmode="numeric", autocomplete="cc-csc", maxlength="4", type="password") }}
+                            </div>
+                        </div>
+                        <div class="form-text mt-2">🔒 En la factura solo se guardan titular, tipo, últimos 4 dígitos y vencimiento. El número completo y el CVV no se almacenan.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-3 pt-2 border-top">
+                        <span class="fw-bold">Total a pagar (con IVA)</span>
+                        <span class="fs-5 fw-bold text-success">${{ "%.2f"|format(total_general) }}</span>
+                    </div>
+
+                    {{ form.submit(class="btn btn-success w-100 fw-bold") }}
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    {% else %}
+
+    <div class="text-center py-5">
+        <h4 style="color: var(--cafe-oscuro);">Tu carrito está vacío</h4>
+        <p class="text-secondary">Agrega productos desde el menú para empezar tu pedido.</p>
+        <a href="{{ url_for('menu') }}" class="btn btn-comprar mt-2">Ir al menú</a>
+    </div>
+
+    {% endif %}
+
+</div>
+
+<script>
+(function () {
+    const selPago   = document.getElementById('forma_pago');
+    const bEfectivo = document.getElementById('bloqueEfectivo');
+    const bTarjeta  = document.getElementById('bloqueTarjeta');
+    const inNumero  = document.getElementById('tarjeta_numero');
+    const inVence   = document.getElementById('tarjeta_vencimiento');
+    const inCvv     = document.getElementById('tarjeta_cvv');
+    const marca     = document.getElementById('marcaTarjeta');
+    if (!selPago) return;
+
+    function alternar() {
+        const tarjeta = selPago.value === 'Tarjeta';
+        bTarjeta.classList.toggle('d-none', !tarjeta);
+        bEfectivo.classList.toggle('d-none', tarjeta);
+        ['tarjeta_titular', 'tarjeta_numero', 'tarjeta_vencimiento', 'tarjeta_cvv'].forEach(id => {
+            document.getElementById(id).required = tarjeta;
+        });
+    }
+
+    function detectarMarca(n) {
+        if (/^4/.test(n)) return 'Visa';
+        if (/^(5[1-5]|2[2-7])/.test(n)) return 'Mastercard';
+        if (/^3[47]/.test(n)) return 'Amex';
+        return '💳';
+    }
+
+    inNumero.addEventListener('input', () => {
+        const d = inNumero.value.replace(/\D/g, '').slice(0, 19);
+        inNumero.value = d.replace(/(.{4})/g, '$1 ').trim();
+        marca.textContent = detectarMarca(d);
+        inCvv.maxLength = /^3[47]/.test(d) ? 4 : 3;
+    });
+    inVence.addEventListener('input', () => {
+        let d = inVence.value.replace(/\D/g, '').slice(0, 4);
+        if (d.length >= 3) d = d.slice(0, 2) + '/' + d.slice(2);
+        inVence.value = d;
+    });
+    inCvv.addEventListener('input', () => { inCvv.value = inCvv.value.replace(/\D/g, ''); });
+
+    selPago.addEventListener('change', alternar);
+    alternar();
+})();
+</script>
+
+{% endblock %}

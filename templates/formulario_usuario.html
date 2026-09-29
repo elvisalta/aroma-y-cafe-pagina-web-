@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Usuarios - AROMA Y CAFÉ{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 900px;">
+    
+    <h2 class="mb-4" style="font-family: 'Fraunces', serif; color: var(--cafe-oscuro);">
+        Usuarios Autorizados
+    </h2>
+
+    <p class="text-muted mb-4">
+        Aquí se registran las personas autorizadas para ingresar al sistema con sus respectivos correos y credenciales.
+    </p>
+
+    <!-- Formulario para agregar nuevo usuario -->
+    <div class="card shadow-sm p-4 mb-5"
+         style="background: var(--crema-tarjeta); border-radius: 12px;">
+
+        <h4 class="mb-3" style="color: var(--acento-marron);">
+            Registrar Nuevo Usuario
+        </h4>
+        
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">Usuario</label>
+                {{ form.usuario(
+                    class="form-control",
+                    placeholder="Nombre de usuario"
+                ) }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Correo Electrónico</label>
+                {{ form.correo(
+                    class="form-control",
+                    placeholder="correo@ejemplo.com"
+                ) }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Contraseña</label>
+                {{ form.password(
+                    class="form-control",
+                    placeholder="********"
+                ) }}
+            </div>
+
+            <button type="submit"
+                    class="btn text-white fw-bold px-4"
+                    style="background: var(--cafe-oscuro);">
+                Agregar Usuario
+            </button>
+        </form>
+    </div>
+
+    <!-- Tabla de Usuarios Registrados -->
+    <div class="card shadow-sm p-4"
+         style="background: #fff; border-radius: 12px;">
+
+        <h4 class="mb-3" style="color: var(--acento-marron);">
+            Usuarios Registrados
+        </h4>
+        
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+
+                <thead style="background: var(--cafe-oscuro); color: white;">
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Correo Electrónico</th>
+                        <th class="text-center">Acción</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for u in usuarios %}
+
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td class="fw-bold">{{ u.usuario }}</td>
+                        <td>{{ u.correo }}</td>
+
+                        <td class="text-center">
+                            <a href="{{ url_for('eliminar_usuario', id=u.id) }}"
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('¿Estás seguro de eliminar este usuario?');">
+                                Eliminar
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="4"
+                            class="text-center text-muted py-3">
+                            No hay usuarios registrados en el sistema.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

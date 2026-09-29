@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Gestión de Proveedores</h2>
+    
+    <form method="POST" action="" class="mb-4 p-3 border rounded bg-light">
+        {{ form.hidden_tag() }}
+        
+        <div class="mb-3">
+            {{ form.empresa.label(class="form-label") }}
+            {{ form.empresa(class="form-control") }}
+            {% for error in form.empresa.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.insumo.label(class="form-label") }}
+            {{ form.insumo(class="form-control") }}
+            {% for error in form.insumo.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.telefono.label(class="form-label") }}
+            {{ form.telefono(class="form-control") }}
+            {% for error in form.telefono.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        {{ form.submit(class="btn btn-success") }}
+        {% if editando %}
+            <a href="{{ url_for('proveedores') }}" class="btn btn-secondary ms-2">Cancelar</a>
+        {% endif %}
+    </form>
+
+    <hr class="my-4">
+
+    <h3>Lista de Proveedores Registrados</h3>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Empresa</th>
+                <th>Insumo</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proveedor in proveedores %}
+            <tr>
+                <td>{{ proveedor.empresa }}</td>
+                <td>{{ proveedor.insumo }}</td>
+                <td>{{ proveedor.telefono }}</td>
+                <td>
+                    <a href="{{ url_for('editar_proveedor', id=proveedor.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{{ url_for('eliminar_proveedor', id=proveedor.id) }}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

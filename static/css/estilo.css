@@ -1,0 +1,235 @@
+..is-invalid { 
+    border: 2px solid #dc3545 !important; 
+}
+.is-valid { 
+    border: 2px solid #198754 !important; 
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #3e2723 0%, #5d4037 100%);
+    color: #fff;
+    padding: 40px 20px;
+}
+.hero-section h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+.hero-section .lead {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 20px;
+}
+
+.product-card {
+    border: none;
+    border-radius: 12px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+.product-card .icon {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
+
+#nosotros img {
+    transition: transform 0.4s ease;
+}
+#nosotros img:hover {
+    transform: scale(1.03);
+}
+
+.section-title {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 40px;
+    font-weight: 700;
+}
+.section-title::after {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 3px;
+    background: #6f4e37;
+    margin: 10px auto 0;
+}
+
+/* ============================================================
+   CORRECCIÓN REFORZADA: texto visible en TODOS los formularios
+   (etiquetas, texto escrito, y el placeholder gris de ejemplo)
+   ============================================================ */
+
+/* Etiquetas (Nombre, Categoría, Precio, Stock, Cliente, Producto, Cantidad, etc.) */
+form label,
+.form-label,
+.card label,
+label.form-label {
+    color: #2c2c2c !important;
+    font-weight: 600 !important;
+    opacity: 1 !important;
+}
+
+/* Texto que el usuario escribe dentro de los campos */
+.form-control,
+.form-select,
+input.form-control,
+select.form-select,
+textarea.form-control {
+    color: #2c2c2c !important;
+    background-color: #ffffff !important;
+    opacity: 1 !important;
+}
+
+/* Texto de ejemplo (placeholder) dentro de los campos vacíos */
+.form-control::placeholder {
+    color: #6c757d !important;
+    opacity: 1 !important;
+}
+
+/* Texto de las opciones dentro de un <select> */
+.form-select option {
+    color: #2c2c2c !important;
+    background-color: #ffffff !important;
+}
+
+/* ============================================================
+   MENÚ: etiqueta "Agotado" y contador de unidades por producto
+   ============================================================ */
+
+.agotado {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin: 8px 0 0 0;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+    animation: pulso-agotado 1.8s ease-in-out infinite;
+}
+
+.agotado::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+@keyframes pulso-agotado {
+    0%, 100% {
+        box-shadow: 0 3px 8px rgba(220, 53, 69, 0.4);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 0 4px 14px rgba(220, 53, 69, 0.65);
+        transform: scale(1.04);
+    }
+}
+
+.contador-cantidad {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.contador-cantidad button {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #6f4e37;
+    background-color: #fff;
+    color: #6f4e37;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.contador-cantidad button:hover {
+    background-color: #6f4e37;
+    color: #fff;
+}
+
+.contador-cantidad .cantidad {
+    width: 50px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+/* Botón "Comprar" del menú público */
+.btn-comprar {
+    background: #6f4e37;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 0;
+    letter-spacing: .02em;
+    transition: background .2s ease, transform .1s ease;
+}
+.btn-comprar:hover {
+    background: #563c29;
+    color: #fff;
+}
+.btn-comprar:active {
+    transform: scale(0.97);
+}
+
+/* ============================================================
+   MEJORAS MODERNAS: Redes sociales superiores visibles y botones
+   ============================================================ */
+
+/* Iconos de redes sociales superiores (esquina izquierda) con fondo oscuro y alta visibilidad */
+header a i, 
+.top-social a, 
+.social-icons a, 
+.navbar a[href*="facebook"], 
+.navbar a[href*="instagram"],
+.d-flex.align-items-center a i,
+.topbar-redes a {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+header a i:hover, 
+.top-social a:hover, 
+.social-icons a:hover,
+.d-flex.align-items-center a i:hover,
+.topbar-redes a:hover {
+    background-color: var(--acento-marron-claro, #b07d35) !important;
+    transform: translateY(-3px);
+}
+
+/* Efectos modernos y dinámicos para los botones principales del Hero */
+.hero-cta .btn {
+    border-radius: 50px !important;
+    font-weight: 700;
+    padding: 12px 32px !important;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.hero-cta .btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}AROMA Y CAFE{% endblock %}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Dancing+Script:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+
+    <style>
+        :root {
+            --crema-fondo: #f4e9d8;
+            --crema-header: #fafaee;
+            --cafe-oscuro: #3a3837;
+            --cafe-medio: #181412;
+            --acento-marron: #1d1919;
+            --acento-marron-claro: #b98255;
+            --crema-tarjeta: #fbf6ec;
+        }
+
+        body {
+            font-family: 'Manrope', 'Segoe UI', sans-serif;
+            background: var(--crema-fondo);
+            color: var(--cafe-oscuro);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .navbar-brand, .brand-name {
+            font-family: 'Fraunces', serif;
+        }
+
+        /* Barra superior: redes sociales (izquierda) + Ingresar Sistema (derecha) */
+        .topbar {
+            background: var(--crema-header);
+            padding: 8px 0;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(59,36,23,0.12);
+        }
+        .btn-ingresar {
+            background: transparent;
+            border: 1.5px solid var(--acento-marron);
+            color: var(--acento-marron);
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 6px 18px;
+            border-radius: 30px;
+            letter-spacing: .02em;
+            transition: background .2s ease, color .2s ease;
+        }
+        .btn-ingresar:hover {
+            background: var(--acento-marron);
+            color: #fff;
+        }
+        .topbar-redes { display: flex; gap: 12px; }
+        .topbar-redes a {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--cafe-oscuro);
+            color: var(--crema-fondo);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: background .2s ease, transform .15s ease;
+        }
+        .topbar-redes a svg { width: 17px; height: 17px; display: block; }
+        .topbar-redes a:hover { background: var(--acento-marron); transform: translateY(-1px); }
+
+        /* Ícono del carrito con contador (badge) en la barra superior */
+        .btn-carrito-icono {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            color: var(--acento-marron);
+            transition: color .2s ease, transform .15s ease;
+        }
+        .btn-carrito-icono:hover { color: var(--cafe-oscuro); transform: translateY(-1px); }
+        .badge-carrito {
+            position: absolute;
+            top: -4px;
+            right: -6px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 50%;
+            background: var(--acento-marron);
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 700;
+            line-height: 18px;
+            text-align: center;
+        }
+
+        /* Navbar principal */
+        .main-nav {
+            background: var(--crema-header) !important;
+            padding: 14px 0;
+            border-bottom: 2px solid rgba(59,36,23,0.15);
+        }
+        .main-nav .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--cafe-oscuro);
+        }
+        .logo-badge {
+            width: 52px; height: 52px;
+            border-radius: 50%;
+            background: var(--cafe-oscuro);
+            color: var(--crema-header);
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .logo-badge svg { width: 28px; height: 28px; }
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .brand-text .principal {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .brand-text .secundario {
+            font-family: 'Manrope', sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: .18em;
+            color: var(--cafe-medio);
+        }
+
+        /* ============================================================
+           EFECTOS MODERNOS PARA LOS ENLACES DEL MENÚ SUPERIOR
+           ============================================================ */
+        .main-nav .nav-link {
+            color: var(--cafe-oscuro) !important;
+            font-weight: 600;
+            font-size: .95rem;
+            padding: 8px 18px !important;
+            margin: 0 4px;
+            border-radius: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .main-nav .nav-link:hover {
+            background-color: var(--cafe-oscuro) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 36, 23, 0.25);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--crema-header) !important;
+            color: var(--cafe-oscuro);
+            border-top: 1px solid rgba(59,36,23,0.15);
+            margin-top: auto;
+        }
+
+        .menu-link {
+            text-decoration: none;
+            color: inherit;
+            transition: color 0.3s ease;
+        }
+        .menu-link:hover { color: var(--acento-marron); }
+
+        /* Tarjetas claras sobre fondo crema */
+        .glass-card {
+            background: var(--crema-tarjeta);
+            border: 1px solid rgba(59,36,23,0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(59,36,23,0.08);
+            color: var(--cafe-oscuro);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .glass-card h1, .glass-card h2, .glass-card h3, .glass-card h5, .glass-card p {
+            color: var(--cafe-oscuro);
+        }
+
+        /* ============================================================
+           ESTILOS ADICIONALES: Sección Quiénes Somos (Aroma y Café)
+           ============================================================ */
+        .about-hero {
+            background: linear-gradient(rgba(59, 36, 23, 0.75), rgba(59, 36, 23, 0.75)), url('{{ url_for("static", filename="img/postres.jpeg") }}') no-repeat center center/cover;
+            min-height: 40vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #ffffff;
+            padding: 4rem 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid var(--acento-marron-claro);
+        }
+
+        .about-hero h1 {
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+
+        .about-hero p {
+            font-size: 1.15rem;
+            max-width: 650px;
+            margin: 0 auto;
+            color: #f4e9d8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Cabecera / Navbar -->
+    {% include "components/navbar.html" %}
+
+    <!-- AVISOS Y MENSAJES DEL SISTEMA -->
+    <div class="toast-flotante-contenedor">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for categoria, message in messages %}
+                    {% set clase_alerta = {
+                        'success': 'toast-flotante-success',
+                        'danger': 'toast-flotante-danger',
+                        'info': 'toast-flotante-info'
+                    }.get(categoria, 'toast-flotante-warning') %}
+                    {% set icono = {
+                        'success': '✅',
+                        'danger': '⚠️',
+                        'info': 'ℹ️'
+                    }.get(categoria, '⚠️') %}
+                    <div class="toast-flotante {{ clase_alerta }}" role="alert">
+                        <span class="toast-flotante-icono">{{ icono }}</span>
+                        <span class="toast-flotante-texto">{{ message }}</span>
+                        <button type="button" class="toast-flotante-cerrar" aria-label="Cerrar">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <style>
+        .toast-flotante-contenedor {
+            position: fixed;
+            top: 90px;
+            right: 20px;
+            z-index: 1080;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 380px;
+        }
+        .toast-flotante {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: #fff;
+            color: var(--cafe-oscuro);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+            padding: 14px 16px;
+            border-left: 5px solid var(--cafe-oscuro);
+            animation: toast-entrada .35s ease-out;
+        }
+        .toast-flotante.toast-saliendo {
+            animation: toast-salida .35s ease-in forwards;
+        }
+        .toast-flotante-success { border-left-color: #198754; }
+        .toast-flotante-danger  { border-left-color: #dc3545; }
+        .toast-flotante-info    { border-left-color: #0dcaf0; }
+        .toast-flotante-warning { border-left-color: #ffc107; }
+        .toast-flotante-icono { font-size: 1.1rem; line-height: 1.4; }
+        .toast-flotante-texto { flex: 1; font-size: .92rem; line-height: 1.4; }
+        .toast-flotante-cerrar {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            line-height: 1;
+            color: var(--cafe-oscuro);
+            opacity: .6;
+            cursor: pointer;
+        }
+        .toast-flotante-cerrar:hover { opacity: 1; }
+
+        @keyframes toast-entrada {
+            from { opacity: 0; transform: translateX(30px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toast-salida {
+            from { opacity: 1; transform: translateX(0); }
+            to   { opacity: 0; transform: translateX(30px); }
+        }
+
+        @media (max-width: 480px) {
+            .toast-flotante-contenedor {
+                left: 12px;
+                right: 12px;
+                max-width: none;
+            }
+        }
+    </style>
+
+    <script>
+        document.querySelectorAll('.toast-flotante').forEach(function (toast) {
+            function cerrar() {
+                toast.classList.add('toast-saliendo');
+                setTimeout(function () { toast.remove(); }, 350);
+            }
+            const boton = toast.querySelector('.toast-flotante-cerrar');
+            if (boton) boton.addEventListener('click', cerrar);
+            setTimeout(cerrar, 5000);
+        });
+    </script>
+
+    <!-- Contenido principal -->
+    <main class="flex-fill">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Modal genérico -->
+    <div class="modal fade" id="modalDetalle" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content text-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalle del Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalBodyContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Login -->
+    <div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: var(--crema-tarjeta); border: none; border-radius: 16px;">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(59,36,23,0.1);">
+                    <h5 class="modal-title" style="font-family: 'Fraunces', serif; color: var(--cafe-oscuro);">Ingresar al Sistema</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ url_for('login') }}" method="POST">
+                        <div class="mb-3">
+                            <label for="usuario" class="form-label" style="font-weight: 600;">Usuario</label>
+                            <input type="text" class="form-control" id="usuario" name="usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="contrasena" class="form-label" style="font-weight: 600;">Contraseña</label>
+                            <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                        </div>
+                        <button type="submit" class="btn w-100" style="background-color: var(--cafe-oscuro); color: var(--crema-fondo); border-radius: 30px;">Ingresar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    {% include "components/footer.html" %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+</html>

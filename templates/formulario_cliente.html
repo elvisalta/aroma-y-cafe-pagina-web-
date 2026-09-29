@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Gestión de Clientes</h2>
+    
+    <!-- Formulario único para registrar o editar -->
+    <form method="POST" action="" class="mb-4 p-3 border rounded bg-light">
+        {{ form.hidden_tag() }}
+
+        <div class="mb-3">
+            {{ form.cedula.label(class="form-label") }}
+            {{ form.cedula(class="form-control", placeholder="Ej. 1712345678") }}
+            {% for error in form.cedula.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.nombre.label(class="form-label") }}
+            {{ form.nombre(class="form-control") }}
+            {% for error in form.nombre.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.correo.label(class="form-label") }}
+            {{ form.correo(class="form-control") }}
+            {% for error in form.correo.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3">
+            {{ form.telefono.label(class="form-label") }}
+            {{ form.telefono(class="form-control") }}
+            {% for error in form.telefono.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        {{ form.submit(class="btn btn-success") }}
+        
+        {% if editando %}
+            <a href="{{ url_for('clientes') }}" class="btn btn-secondary ms-2">Cancelar</a>
+        {% endif %}
+    </form>
+
+    <hr class="my-4">
+
+    <!-- Listado con opciones de acción -->
+    <h3>Lista de Clientes Registrados</h3>
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Cédula</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in clientes %}
+            <tr>
+                <td>{{ cliente.cedula }}</td>
+                <td>{{ cliente.nombre }}</td>
+                <td>{{ cliente.correo }}</td>
+                <td>{{ cliente.telefono }}</td>
+                <td>
+                    <a href="{{ url_for('editar_cliente', id=cliente.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{{ url_for('eliminar_cliente', id=cliente.id) }}" class="btn btn-danger btn-sm">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

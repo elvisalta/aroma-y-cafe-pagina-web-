@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Menú - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+
+<!-- Estilos CSS para animaciones y movimiento -->
+<style>
+    .producto-menu-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    /* EFECTO DE MOVIMIENTO EN LA TARJETA AL PASAR EL CURSOR */
+    .producto-menu-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* EFECTO DE ZOOM SUAVE EN LA IMAGEN */
+    .img-hover-zoom {
+        transition: transform 0.4s ease;
+    }
+    .producto-menu-card:hover .img-hover-zoom {
+        transform: scale(1.05);
+    }
+
+    /* EFECTO EN LOS BOTONES MÁS / MENOS */
+    .btn-menos, .btn-mas {
+        transition: all 0.2s ease;
+    }
+    .btn-menos:active, .btn-mas:active {
+        transform: scale(0.90);
+    }
+</style>
+
+<!-- BANNER SUPERIOR UNIFICADO CON LA NUEVA FOTO Y LETRAS BLANCAS RESALTADAS -->
+<section class="page-hero">
+    <div class="container py-3 text-center">
+        <h1>Nuestro Menú</h1>
+        <p>Explora nuestra variedad de cafés especiales, bebidas artesanales y deliciosos postres recién horneados en un ambiente pensado para disfrutar.</p>
+    </div>
+</section>
+
+<div class="container py-4">
+
+    <!-- Productos -->
+    <div class="row g-4">
+
+        {% if productos %}
+
+            {% for producto in productos %}
+
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+
+                <!-- Tarjeta animada con Flexbox -->
+                <div class="producto-menu-card h-100 shadow-sm border-0 rounded-3 overflow-hidden bg-white d-flex flex-column">
+
+                    <!-- Contenedor rígido de la imagen -->
+                    <div style="height: 180px; width: 100%; background-color: #f8f9fa; overflow: hidden;" class="position-relative">
+                        {% if producto.imagen and producto.imagen.strip() != "" %}
+                            <img
+                                src="{{ url_for('static', filename='img/' ~ producto.imagen) }}"
+                                alt="{{ producto.nombre }}"
+                                class="w-100 h-100 img-hover-zoom"
+                                style="object-fit: cover;"
+                                onerror="this.onerror=null; this.src='{{ url_for('static', filename='img/default.svg') }}';"
+                            >
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center h-100 text-muted small bg-light">
+                                <span class="fw-semibold">Sin imagen</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Información del producto organizada -->
+                    <div class="card-body p-3 d-flex flex-column justify-content-between flex-grow-1">
+
+                        <!-- Sección Superior: Nombre y Descripción -->
+                        <div class="mb-3">
+                            <h5 class="producto-menu-nombre mb-1 fw-bold text-dark fs-6">
+                                {{ producto.nombre }}
+                            </h5>
+
+                            {% if producto.descripcion %}
+                                <p class="producto-menu-descripcion mb-0 text-secondary small">
+                                    {{ producto.descripcion }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- Sección Inferior: Precio y Controles -->
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="producto-menu-precio fs-5 fw-bold text-success">
+                                    ${{ "%.2f"|format(producto.precio) }}
+                                </span>
+                            </div>
+
+                            <!-- Evaluación de stock independiente por producto -->
+                            {% if producto.stock is defined and producto.stock is not none and producto.stock|int > 0 %}
+                                <!-- SI HAY STOCK: Aparece la barra [- 1 +] y el botón Comprar -->
+                                <div class="contador-cantidad d-flex align-items-center justify-content-center gap-2" data-id="{{ producto.id }}">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-menos px-2">-</button>
+                                    <input type="number" class="form-control form-control-sm text-center cantidad p-0" value="1" min="1" max="{{ producto.stock }}" readonly style="width: 40px; height: 30px;">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary btn-mas px-2">+</button>
+                                </div>
+                                <button
+                                    type="button"
+                                    class="btn btn-comprar btn-agregar-carrito w-100 mt-2 fw-bold"
+                                    data-id="{{ producto.id }}"
+                                >
+                                    <span class="texto-boton">Agregar al carrito</span>
+                                </button>
+                            {% else %}
+                                <!-- SI NO HAY STOCK: Oculta la barra y muestra ÚNICAMENTE el botón rojo AGOTADO -->
+                                <span class="badge bg-danger text-white fw-bold w-100 py-2 fs-6 text-uppercase shadow-sm d-block text-center">
+                                    AGOTADO
+                                </span>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <!-- Cuando todavía no existen productos -->
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <h4 style="color: var(--cafe-oscuro);">
+                        No hay productos disponibles
+                    </h4>
+                    <p class="text-secondary">
+                        Los productos agregados aparecerán aquí automáticamente.
+                    </p>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+<script>
+    // Cada tarjeta tiene su contador [- 1 +] y su botón "Agregar al carrito".
+    // Al hacer clic se envía la cantidad elegida por AJAX, SIN redirigir,
+    // y se actualiza el contador del ícono del carrito en la barra de navegación.
+    document.querySelectorAll('.producto-menu-card').forEach(function (tarjeta) {
+        const boton = tarjeta.querySelector('.btn-agregar-carrito');
+        const contador = tarjeta.querySelector('.contador-cantidad');
+        if (!boton) return;
+
+        boton.addEventListener('click', function () {
+            const productoId = boton.getAttribute('data-id');
+            const cantidadInput = contador ? contador.querySelector('.cantidad') : null;
+            const cantidad = cantidadInput ? parseInt(cantidadInput.value, 10) || 1 : 1;
+
+            boton.disabled = true;
+            const textoOriginal = boton.querySelector('.texto-boton').textContent;
+            boton.querySelector('.texto-boton').textContent = 'Agregando...';
+
+            fetch("{{ url_for('agregar_al_carrito') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ producto_id: productoId, cantidad: cantidad })
+            })
+            .then(function (respuesta) { return respuesta.json().then(function (datos) { return { status: respuesta.status, datos: datos }; }); })
+            .then(function (resultado) {
+                const datos = resultado.datos;
+                if (datos.ok) {
+                    mostrarToastCarrito(datos.mensaje, 'success');
+                    actualizarContadorCarrito(datos.carrito_cantidad);
+                } else {
+                    mostrarToastCarrito(datos.mensaje || 'No se pudo agregar el producto.', 'danger');
+                }
+            })
+            .catch(function () {
+                mostrarToastCarrito('Ocurrió un error de conexión. Intenta de nuevo.', 'danger');
+            })
+            .finally(function () {
+                boton.disabled = false;
+                boton.querySelector('.texto-boton').textContent = textoOriginal;
+            });
+        });
+    });
+</script>
+
+{% endblock %}

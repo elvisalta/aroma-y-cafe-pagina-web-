@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Productos - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+<div class="bg-white p-4 rounded shadow mb-5">
+    <h2>Catálogo de Productos</h2>
+    <p class="text-muted">Administra los cafés, postres y bizcochos ofrecidos.</p>
+    <hr>
+
+    <div class="row">
+        {% for p in productos %}
+        <div class="col-md-4 mb-3">
+            <div class="card p-3 h-100">
+                <h5>{{ p.nombre|upper }}</h5>
+                <p class="text-muted mb-1">Categoría: {{ p.categoria }}</p>
+                <p class="fw-bold text-success">${{ p.precio }}</p>
+                
+                <div class="mt-auto">
+                    {% if p.stock > 0 %}
+                        <span class="badge bg-success">Disponible (Stock: {{ p.stock }})</span>
+                    {% else %}
+                        <span class="badge bg-danger">Agotado</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</div>
+{% endblock %}

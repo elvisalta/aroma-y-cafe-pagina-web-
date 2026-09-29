@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Quiénes Somos - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+
+<!-- 1. Cabecera unificada -->
+<section class="page-hero">
+    <div class="container py-3 text-center">
+        <h1>Quiénes Somos</h1>
+        <p>Rescatamos las tradiciones del café artesanal, cuidando cada detalle desde la selección del grano hasta la taza que llega a tu mesa.</p>
+    </div>
+</section>
+
+<!-- 2. Sección Principal: Historia / Nuestra Esencia -->
+<div class="container py-5" style="max-width: 1000px;">
+    <div class="glass-card p-4 p-md-5">
+        <div class="row align-items-center g-4">
+            <div class="col-md-6">
+                <span class="text-uppercase fw-bold small" style="color: var(--acento-marron-claro); letter-spacing: 2px;">☕ Nuestra Esencia</span>
+                <h2 class="fw-bold mb-3 mt-1" style="border-left: 4px solid var(--acento-marron); padding-left: 12px;">Pasión por el Café</h2>
+                <p class="mb-3" style="line-height: 1.8;">
+                    Bienvenidos a <strong>Aroma y Café</strong>, un espacio creado para los amantes del buen café. Nos dedicamos a ofrecer una experiencia única a través de sabores auténticos y artesanales.
+                </p>
+                <p class="mb-4" style="line-height: 1.8;">
+                    Cada grano es seleccionado rigurosamente para garantizar que disfrutes la máxima calidad en cada sorbo, en un ambiente cálido y acogedor.
+                </p>
+                <div class="signature fs-3" style="font-family: 'Dancing Script', cursive; color: var(--acento-marron);">Elvis & Equipo</div>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='img/photo-1611653683051-17e3b2d6e8ea.avif') }}"
+                     alt="Interior de Aroma y Café"
+                     class="img-fluid rounded-4 shadow"
+                     style="max-height: 320px; width: 100%; object-fit: cover;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. Sección: Imagen del Chef/Cocina y Texto al lado -->
+<div class="container py-4" style="max-width: 1000px;">
+    <div class="glass-card p-4 p-md-5">
+        <div class="row align-items-center g-4">
+            <div class="col-md-5 text-center">
+                <div class="p-2 bg-white rounded-4 shadow-sm border">
+                    <img src="{{ url_for('static', filename='img/cocina.avif') }}"
+                         alt="Nuestra Cocina"
+                         class="img-fluid rounded-3 w-100"
+                         style="height: 240px; object-fit: cover;">
+                </div>
+            </div>
+            <div class="col-md-7">
+                <span class="text-uppercase fw-bold small" style="color: var(--acento-marron-claro); letter-spacing: 2px;">👨‍🍳 Nuestro Experto</span>
+                <h2 class="fw-bold mb-3 mt-1" style="border-left: 4px solid var(--acento-marron); padding-left: 12px;">El Arte detrás de Cada Plato</h2>
+                <p class="mb-3" style="line-height: 1.8;">
+                    Con años de dedicación en la alta cocina y la repostería artesanal, nuestro equipo combina técnicas tradicionales y pasión para ofrecerte sabores inolvidables.
+                </p>
+                <p class="mb-0 fst-italic" style="color: var(--acento-marron);">
+                    "La cocina es el corazón de nuestro hogar, hecho expresión para ti."
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 4. NUEVA SECCIÓN MODERNA: Nuestros Pilares de Calidad (3 Tarjetas) -->
+<div class="container py-4" style="max-width: 1000px;">
+    <div class="text-center mb-4">
+        <span class="text-uppercase fw-bold small" style="color: var(--acento-marron-claro); letter-spacing: 2px;">🌟 Compromiso con Ti</span>
+        <h3 class="fw-bold" style="color: var(--cafe-oscuro);">Nuestros Pilares</h3>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass-card p-4 text-center h-150 shadow-sm border-0">
+                <div class="mb-3">
+                    <i class="fas fa-seedling text-success fs-2"></i>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--cafe-oscuro);">100% Orgánico</h5>
+                <p class="text-secondary small mb-0">Granos cosechados de forma sostenible apoyando a productores locales de Ecuador.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-4 text-center h-150 shadow-sm border-0">
+                <div class="mb-3">
+                    <i class="fas fa-fire text-warning fs-2"></i>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--cafe-oscuro);">Tueste Artesanal</h5>
+                <p class="text-secondary small mb-0">Proceso cuidadoso para resaltar notas aromáticas únicas en cada taza de café.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-4 text-center h-150 shadow-sm border-0">
+                <div class="mb-3">
+                    <i class="fas fa-heart text-danger fs-2"></i>
+                </div>
+                <h5 class="fw-bold mb-2" style="color: var(--cafe-oscuro);">Calidez y Amistad</h5>
+                <p class="text-secondary small mb-0">Un espacio pensado para conectar, compartir y disfrutar de los mejores momentos.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. Sección: Video de YouTube configurado y funcionando -->
+<div class="container py-5 text-center" style="max-width: 800px;">
+    <h3 class="fw-bold mb-4" style="color: var(--cafe-oscuro);">Conoce más de nuestra cafetería</h3>
+    <div class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden border">
+        <iframe src="https://www.youtube.com/embed/_bNbada12iM" title="Coffee shop promo video" allowfullscreen></iframe>
+    </div>
+</div>
+
+<!-- 6. Barra de Estadísticas -->
+<section class="py-5 text-white" style="background-color: var(--cafe-oscuro); border-top: 1px solid rgba(255,255,255,0.1);">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-6 col-md-3">
+                <h3 class="display-5 fw-bold" style="color: var(--crema-header);">10+</h3>
+                <p class="text-uppercase small tracking-wider mb-0 opacity-75">Cafés Especiales</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="display-5 fw-bold" style="color: var(--crema-header);">80+</h3>
+                <p class="text-uppercase small tracking-wider mb-0 opacity-75">Postres Artesanales</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="display-5 fw-bold" style="color: var(--crema-header);">5</h3>
+                <p class="text-uppercase small tracking-wider mb-0 opacity-75">Años de Experiencia</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="display-5 fw-bold" style="color: var(--crema-header);">15K</h3>
+                <p class="text-uppercase small tracking-wider mb-0 opacity-75">Clientes Felices</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

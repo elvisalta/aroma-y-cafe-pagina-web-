@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+
+<style>
+    .hero-nueva {
+        position: relative;
+        min-height: 480px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+            linear-gradient(rgba(59,36,23,.45), rgba(59,36,23,.6)),
+            url("{{ url_for('static', filename='img/bluesnap-coffee-beans-9110517.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        text-align: center;
+        padding: 60px 20px;
+    }
+    .burbujas {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        max-width: 480px;
+        margin: 0 auto 28px;
+    }
+    .burbuja {
+        width: 78px; height: 78px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Fraunces', serif;
+        font-weight: 700;
+        font-size: 1.05rem;
+        letter-spacing: .03em;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .burbuja:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    }
+    .burbuja.osc { background: var(--cafe-oscuro); }
+    .burbuja.cla { background: var(--acento-marron-claro); }
+    
+    .hero-cta {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    /* =========================================================
+       BOTONES MODERNOS CON EFECTOS DINÁMICOS Y SOMBRA PROFUNDA
+       ========================================================= */
+    .btn-moderno-claro {
+        background-color: #ffffff !important;
+        color: #4a2e18 !important;
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        padding: 12px 32px !important;
+        border: none !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    }
+    .btn-moderno-claro:hover {
+        background-color: var(--crema-header) !important;
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+        color: #2c1810 !important;
+    }
+
+    .btn-moderno-oscuro {
+        background: linear-gradient(135deg, #6b4423, #4a2e18) !important;
+        color: #ffffff !important;
+        border-radius: 50px !important;
+        font-weight: 700 !important;
+        padding: 12px 32px !important;
+        border: none !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25) !important;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+    }
+    .btn-moderno-oscuro:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
+        color: #ffffff !important;
+    }
+
+    /* Tarjetas con efectos modernos de elevación */
+    .producto-card {
+        background: var(--crema-tarjeta, #fff);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(59,36,23,0.08);
+        height: 100%;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(59,36,23,0.05);
+    }
+    .producto-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 35px rgba(59,36,23,0.15);
+    }
+    .producto-card img {
+        width: 100%;
+        height: 190px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    .producto-card:hover img {
+        transform: scale(1.05);
+    }
+    .producto-card .cuerpo {
+        padding: 24px;
+    }
+    .producto-card h3 {
+        font-family: 'Dancing Script', cursive;
+        font-size: 1.8rem;
+        color: var(--acento-marron);
+        margin-bottom: 8px;
+    }
+</style>
+
+<!-- HERO -->
+<section class="hero-nueva">
+    <div>
+        <div class="burbujas">
+            <span class="burbuja osc">A</span>
+            <span class="burbuja cla">RO</span>
+            <span class="burbuja osc">MA</span>
+            <span class="burbuja cla">&amp;</span>
+            <span class="burbuja osc">CA</span>
+            <span class="burbuja cla">FÉ</span>
+        </div>
+        <p class="lead text-white mb-4 shadow-sm" style="max-width:520px; margin:0 auto 28px; font-weight: 300; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">
+            El aroma y el sabor artesanal en cada taza, en un espacio pensado para disfrutar con calma.
+        </p>
+        <div class="hero-cta">
+            <a href="{{ url_for('menu') }}" class="btn btn-moderno-claro">Ver Menú <i class="fas fa-coffee ms-1"></i></a>
+            <a href="{{ url_for('contacto') }}" class="btn btn-moderno-oscuro">Contáctanos <i class="fas fa-map-marker-alt ms-1"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- BIENVENIDA + DESTACADOS -->
+<div class="container py-5" style="max-width: 1050px;">
+
+    <div class="row align-items-center mb-5 p-4 rounded-4 shadow-sm bg-white" style="border-left: 5px solid var(--acento-marron);">
+        <div class="col-md-7">
+            <h2 class="fw-bold" style="color: var(--cafe-oscuro);">Bienvenidos</h2>
+            <p class="text-secondary mb-0" style="line-height: 1.8;">
+                En Aroma y Café combinamos el ritual del café de siempre con un ambiente cálido y cercano.
+                Cada producto está pensado para acompañar tus mejores momentos del día.
+            </p>
+        </div>
+        <div class="col-md-5 text-center mt-3 mt-md-0">
+            <a href="{{ url_for('quienes_somos') }}" class="btn btn-lg fw-bold rounded-pill px-4 shadow-sm text-white" style="background: var(--cafe-oscuro); transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.03)';" onmouseout="this.style.transform='scale(1)';">Quiénes somos <i class="fas fa-arrow-right ms-2"></i></a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="producto-card">
+                <div style="overflow: hidden;">
+                    <img src="{{ url_for('static', filename='img/capuchino.jpg') }}" alt="Café Artesanal">
+                </div>
+                <div class="cuerpo">
+                    <h3>Café Artesanal</h3>
+                    <p class="text-secondary mb-0">Pasado, expreso y capuchino, tostados y preparados con dedicación.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="producto-card">
+                <div style="overflow: hidden;">
+                    <img src="{{ url_for('static', filename='img/biscochos.jfif') }}" alt="Bizcochos">
+                </div>
+                <div class="cuerpo">
+                    <h3>Bizcochos</h3>
+                    <p class="text-secondary mb-0">Variedad de bizcochos tradicionales recién horneados cada día.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="producto-card">
+                <div style="overflow: hidden;">
+                    <img src="{{ url_for('static', filename='img/postres.jpeg') }}" alt="Postres">
+                </div>
+                <div class="cuerpo">
+                    <h3>Postres</h3>
+                    <p class="text-secondary mb-0">Tortas, cheesecakes y muffins para acompañar tu café favorito.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

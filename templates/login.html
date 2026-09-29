@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ingresar al Sistema · Aroma y Café</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --coffee-950:#1c120c;
+            --coffee-900:#241811;
+            --coffee-700:#4a3324;
+            --cream-100:#f4ead9;
+            --cream-50:#faf5ec;
+            --gold-500:#c99a4a;
+            --gold-400:#e0b978;
+        }
+        *{ box-sizing:border-box; margin:0; padding:0; }
+        html, body{ height:100%; }
+        body{
+            font-family:'Manrope',sans-serif;
+            min-height:100vh;
+            display:flex;
+            background:
+                linear-gradient(180deg, rgba(28,18,12,.72), rgba(28,18,12,.88)),
+                url("{{ url_for('static', filename='img/bluesnap-coffee-beans-9110517.jpg') }}");
+            background-size:cover;
+            background-position:center;
+        }
+        .wrap{ display:flex; width:100%; min-height:100vh; }
+
+        .brand-side{
+            flex:1.1;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            padding:64px 48px;
+            text-align:center;
+            color:var(--cream-100);
+        }
+        .crest{
+            width:132px; height:132px;
+            border:1.5px solid var(--gold-500);
+            border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            position:relative;
+            margin-bottom:24px;
+            font-size:44px;
+        }
+        .crest::before{
+            content:""; position:absolute; inset:9px;
+            border:1px solid rgba(224,185,120,.4);
+            border-radius:50%;
+        }
+        .brand-name{
+            font-family:'Fraunces',serif;
+            font-weight:600;
+            font-size:clamp(26px,3vw,36px);
+        }
+        .brand-name em{ font-style:normal; color:var(--gold-400); }
+        .tagline{
+            font-size:15px;
+            color:rgba(244,234,217,.75);
+            margin-top:14px;
+            max-width:320px;
+            line-height:1.5;
+        }
+        .volver{
+            margin-top:34px;
+            font-size:13px;
+            color:var(--gold-400);
+            text-decoration:none;
+            border-bottom:1px solid transparent;
+        }
+        .volver:hover{ border-color:var(--gold-400); }
+
+        .access-side{
+            flex:1;
+            min-width:360px;
+            max-width:460px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:48px 40px;
+            background:var(--cream-50);
+            color:var(--coffee-900);
+        }
+        .access-card{ width:100%; max-width:320px; }
+        .access-title{
+            font-family:'Fraunces',serif;
+            font-size:24px; font-weight:600; margin-bottom:6px;
+        }
+        .access-sub{ font-size:13.5px; color:var(--coffee-700); margin-bottom:26px; }
+
+        .field{ margin-bottom:18px; text-align:left; }
+        label{
+            display:block; font-size:12px; font-weight:600;
+            letter-spacing:.02em; color:var(--coffee-700); margin-bottom:6px;
+        }
+        input[type="text"], input[type="password"]{
+            width:100%; padding:11px 13px;
+            border:1.5px solid #e3d5bf; border-radius:6px;
+            background:#fff; font-family:'Manrope',sans-serif; font-size:14.5px;
+            color:var(--coffee-900);
+        }
+        input:focus{ outline:none; border-color:var(--gold-500); }
+
+        .row-between{
+            display:flex; align-items:center; justify-content:flex-start;
+            gap:8px; font-size:13px; margin-bottom:22px; color:var(--coffee-700);
+        }
+        .row-between input{ accent-color:var(--gold-500); width:auto; }
+
+        button[type="submit"]{
+            width:100%; padding:12px; border:none; border-radius:6px;
+            background:var(--coffee-900); color:var(--cream-50);
+            font-family:'Manrope',sans-serif; font-size:14.5px; font-weight:700;
+            letter-spacing:.02em; cursor:pointer;
+        }
+        button[type="submit"]:hover{ background:#150d08; }
+
+        .flash{
+            background:rgba(224,104,79,.12);
+            border:1px solid rgba(224,104,79,.35);
+            color:#a6402a; font-size:13px; padding:9px 11px;
+            border-radius:6px; margin-bottom:18px;
+        }
+
+        @media (max-width:820px){
+            .wrap{ flex-direction:column; }
+            .brand-side{ padding:44px 24px 30px; }
+            .access-side{ max-width:100%; min-width:0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+
+        <div class="brand-side">
+            <div class="crest">☕</div>
+            <div class="brand-name">Aroma y <em>Café</em></div>
+            <p class="tagline">Acceso exclusivo para el equipo administrativo del restaurante.</p>
+            <a class="volver" href="{{ url_for('index') }}">‹ Volver al sitio</a>
+        </div>
+
+        <div class="access-side">
+            <div class="access-card">
+                <div class="access-title">Ingresar al Sistema</div>
+                <div class="access-sub">Ingresa tus credenciales para continuar.</div>
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for m in messages %}
+                            <div class="flash">{{ m }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="field">
+                        <label>{{ form.usuario.label.text }}</label>
+                        {{ form.usuario() }}
+                    </div>
+                    <div class="field">
+                        <label>{{ form.contrasena.label.text }}</label>
+                        {{ form.contrasena() }}
+                    </div>
+                    <div class="row-between">
+                        <input type="checkbox" id="recordar" name="recordar">
+                        <label for="recordar" style="margin:0;">Recordarme</label>
+                    </div>
+                    {{ form.submit() }}
+                </form>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

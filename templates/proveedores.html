@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Proveedores - AROMA Y CAFE{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+<div class="bg-white p-4 rounded shadow mb-5">
+    <h2>Gestión de Proveedores</h2>
+    <p class="text-muted">Registro y control de proveedores de insumos y materia prima.</p>
+    <hr>
+
+    <!-- Formulario de Registro -->
+    <form id="formProveedor" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label class="form-label">RUC / Identificación</label>
+            <input type="text" id="ruc" class="form-control" placeholder="Ingrese el RUC" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Empresa Proveedora</label>
+            <input type="text" id="empresa" class="form-control" placeholder="Nombre de la empresa" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Insumo Suministrado</label>
+            <input type="text" id="insumo" class="form-control" placeholder="Ej. Café en grano, Lácteos" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Teléfono</label>
+            <input type="text" id="telefono" class="form-control" placeholder="Teléfono" required>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">Add</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <!-- Tabla de Proveedores Registrados (Vacía para que la llene tu app/JS) -->
+    <h5 class="mt-4">Lista de Proveedores Registrados</h5>
+    <div class="table-responsive mt-3">
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>RUC</th>
+                    <th>Empresa</th>
+                    <th>Insumo</th>
+                    <th>Teléfono</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="listaProveedores">
+                <!-- Aquí se cargarán los registros dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+{% endblock %}
