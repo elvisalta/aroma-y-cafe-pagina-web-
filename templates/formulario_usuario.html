@@ -27,26 +27,35 @@
             <div class="mb-3">
                 <label class="form-label fw-bold">Usuario</label>
                 {{ form.usuario(
-                    class="form-control",
-                    placeholder="Nombre de usuario"
+                    class="form-control" ~ (" is-invalid" if form.usuario.errors else ""),
+                    placeholder="Nombre de usuario", maxlength="30", autocomplete="off", required=True
                 ) }}
+                {% for error in form.usuario.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                <div class="form-text">3 a 30 caracteres, empieza con una letra (letras, números, punto, guion).</div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Correo Electrónico</label>
                 {{ form.correo(
-                    class="form-control",
-                    placeholder="correo@ejemplo.com"
+                    class="form-control" ~ (" is-invalid" if form.correo.errors else ""),
+                    placeholder="correo@ejemplo.com", maxlength="100", type="email", autocomplete="off", required=True
                 ) }}
+                {% for error in form.correo.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
             </div>
 
             <div class="mb-3">
                 <label class="form-label fw-bold">Contraseña</label>
                 {{ form.password(
-                    class="form-control",
-                    placeholder="********"
+                    class="form-control" ~ (" is-invalid" if form.password.errors else ""),
+                    placeholder="Mínimo 8 caracteres", maxlength="64", autocomplete="new-password", required=True
                 ) }}
+                {% for error in form.password.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+                <div class="form-text">Mínimo 8 caracteres, con letras y números (ejemplo: Aroma2026).</div>
             </div>
+
+            {% for error in form.csrf_token.errors %}
+                <div class="alert alert-warning py-2">El formulario estuvo abierto mucho tiempo. Recarga la página e inténtalo de nuevo.</div>
+            {% endfor %}
 
             <button type="submit"
                     class="btn text-white fw-bold px-4"

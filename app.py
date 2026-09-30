@@ -390,6 +390,10 @@ def usuarios():
             cursor.close()
             conexion.close()
         return redirect(url_for('usuarios'))
+    elif request.method == 'POST':
+        # El formulario no pasó las validaciones: se avisa con un mensaje visible
+        primer_error = next((e for errs in form.errors.values() for e in errs), None)
+        flash(primer_error or 'Revisa los datos del formulario.', 'danger')
 
     conexion = obtener_conexion()
     cursor = conexion.cursor()
