@@ -20,7 +20,7 @@ from forms.usuario_form import UsuarioForm
 from forms.checkout_form import CheckoutForm
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'clave_secreta_aroma_cafe_2026'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'clave_secreta_aroma_cafe_2026')
 
 
 # --- MÓDULO PAGOS: helpers ---
