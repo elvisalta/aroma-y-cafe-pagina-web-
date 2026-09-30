@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AROMA Y CAFE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; }
+        .hero-section { background-color: #1a1918; color: white; padding: 60px 0; }
+        .card { transition: transform 0.3s; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card:hover { transform: scale(1.05); }
+        footer { background-color: #111111; color: white; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">AROMA Y CAFE</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#quienes-somos">Quiénes Somos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#servicios">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-4">
+        <section id="inicio" class="hero-section text-center rounded mb-5">
+            <h1>Bienvenidos a Aroma y Café</h1>
+            <p class="lead">El aroma y el sabor artesanal en cada taza.</p>
+            <a href="#contacto" class="btn btn-warning btn-lg">Visítanos</a>
+        </section>
+
+        <section id="quienes-somos" class="mb-5">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2>Quiénes Somos</h2>
+                    <p>Bienvenidos a Aroma y Café, un espacio creado para los amantes del buen café. Rescatamos las tradiciones del café artesanal...</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="img/postres.jpeg" alt="Postres" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </section>
+
+        <section id="servicios" class="mb-5">
+            <h2 class="text-center mb-4">Nuestros Productos</h2>
+            <div class="row">
+                <div class="col-md-4"><div class="card p-3"><h5>Café Artesanal</h5><p>Pasado, Expreso, Capuchino.</p></div></div>
+                <div class="col-md-4"><div class="card p-3"><h5>Bizcochos</h5><p>Variedad de bizcochos tradicionales.</p></div></div>
+                <div class="col-md-4"><div class="card p-3"><h5>Postres</h5><p>Tortas, Cheesecakes y Muffins.</p></div></div>
+            </div>
+        </section>
+
+        <section id="contacto" class="mb-5 bg-white p-4 rounded shadow">
+            <h2>Contáctanos</h2>
+            <div class="mt-3">
+                <p><strong>📍 Ubicación:</strong> Av. Amazonas (cerca al Hotel Mercure) y Quicentro</p>
+                <p><strong>📧 Correo:</strong> contacto@aromaecafe.com</p>
+                <p><strong>📱 Teléfono:</strong> +593 0995723723</p>
+            </div>
+            <div class="mt-3">
+                <a href="#" class="btn btn-outline-dark">Instagram</a>
+                <a href="#" class="btn btn-outline-primary">Facebook</a>
+            </div>
+        </section>
+
+        <section id="gestion-pedidos" class="mb-5 bg-white p-4 rounded shadow">
+            <h2>Gestión de Pedidos</h2>
+            <form id="formPedido" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" id="nombre" class="form-control" placeholder="Nombre" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" id="descripcion" class="form-control" placeholder="Descripción" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Categoría</label>
+                    <select id="categoria" class="form-select" required>
+                        <option value="">Categoría...</option>
+                        <option value="Café">Café</option>
+                        <option value="Postre">Postre</option>
+                    </select>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success">Add</button>
+                </div>
+            </form>
+            
+            <!-- Spinner -->
+            <div id="spinnerCarga" class="text-center my-3 d-none">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+
+            <div id="mensaje" class="mt-2"></div>
+            <hr>
+            <h5 id="totalRegistros">Total de registros: 0</h5>
+            <div id="listaPedidos" class="row mt-3"></div>
+        </section>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal fade" id="modalDetalle" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalle del Pedido</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="modalBodyContent"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-3">
+        <p>&copy; 2026 - Elvis Oliver Alta Calapi | Desarrollo Web</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

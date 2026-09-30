@@ -9,7 +9,7 @@
 
         <div class="mb-3">
             {{ form.cedula.label(class="form-label") }}
-            {{ form.cedula(class="form-control", placeholder="Ej. 1712345678") }}
+            {{ form.cedula(class="form-control", placeholder="Ej. 1712345678", maxlength="10", inputmode="numeric", pattern="[0-9]{10}", title="10 números, sin letras", autocomplete="off", required=True, oninput="this.value=this.value.replace(/\\D/g,'')") }}
             {% for error in form.cedula.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
@@ -17,7 +17,7 @@
 
         <div class="mb-3">
             {{ form.nombre.label(class="form-label") }}
-            {{ form.nombre(class="form-control") }}
+            {{ form.nombre(class="form-control", maxlength="100", required=True, placeholder="Nombre y apellido") }}
             {% for error in form.nombre.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
@@ -25,7 +25,7 @@
 
         <div class="mb-3">
             {{ form.correo.label(class="form-label") }}
-            {{ form.correo(class="form-control") }}
+            {{ form.correo(class="form-control", maxlength="100", required=True) }}
             {% for error in form.correo.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
@@ -33,7 +33,7 @@
 
         <div class="mb-3">
             {{ form.telefono.label(class="form-label") }}
-            {{ form.telefono(class="form-control") }}
+            {{ form.telefono(class="form-control", placeholder="09XXXXXXXX", maxlength="10", inputmode="numeric", required=True, oninput="this.value=this.value.replace(/\\D/g,'')") }}
             {% for error in form.telefono.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}

@@ -1,23 +1,16 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, IntegerField, SubmitField
-from wtforms.validators import DataRequired, NumberRange
+from wtforms import SelectField, SubmitField
+from wtforms.validators import DataRequired
 
 
 class FacturacionForm(FlaskForm):
+    """Cabecera de la factura del administrador. Las líneas (producto + cantidad)
+    llegan como listas desde la tabla dinámica y se validan en la ruta /facturacion,
+    así una misma factura puede llevar todos los productos que el cliente quiera."""
     cliente = SelectField(
         'Seleccionar Cliente',
         coerce=int,
         validators=[DataRequired(message='Selecciona un cliente')]
-    )
-    producto = SelectField(
-        'Seleccionar Producto',
-        coerce=int,
-        validators=[DataRequired(message='Selecciona un producto')]
-    )
-    cantidad = IntegerField(
-        'Cantidad',
-        default=1,
-        validators=[DataRequired(message='Ingresa la cantidad'), NumberRange(min=1, message='La cantidad debe ser mayor a 0')]
     )
     forma_pago = SelectField(
         'Forma de pago',

@@ -4,10 +4,36 @@
 
 {% block content %}
 
+<style>
+    .metodos-pago { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .metodo-btn {
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 12px 10px; border-radius: 12px; font-weight: 700;
+        background: #fff; color: var(--cafe-oscuro);
+        border: 2px solid rgba(58,56,55,.18); cursor: pointer;
+        transition: all .2s ease;
+    }
+    .metodo-btn:hover { border-color: var(--acento-marron-claro); transform: translateY(-1px); }
+    .metodo-btn.activo {
+        background: var(--cafe-oscuro); color: var(--crema-header);
+        border-color: var(--cafe-oscuro); box-shadow: 0 6px 16px rgba(0,0,0,.2);
+    }
+    .metodo-ico { font-size: 1.25rem; }
+
+    .panel-pago {
+        background: #fff; border: 1px solid rgba(58,56,55,.12);
+        border-left: 4px solid var(--acento-marron-claro);
+        border-radius: 12px; padding: 16px;
+        animation: aparecerPanel .28s ease;
+    }
+    @keyframes aparecerPanel { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+</style>
+
+
 <section class="page-hero">
     <div class="container py-3 text-center">
         <h1>Tu Carrito</h1>
-        <p>Revisa tus productos, ajusta cantidades y completa tus datos para facturar todo tu pedido en un solo paso.</p>
+        <p>Revisa lo que llevas, cambia las cantidades si quieres y llena tus datos para la factura.</p>
     </div>
 </section>
 
@@ -39,9 +65,9 @@
 
                     <!-- Cambiar cantidad: al modificarla se envía automáticamente -->
                     <form method="POST" action="{{ url_for('actualizar_carrito', producto_id=item.id) }}" class="d-flex align-items-center gap-2">
-                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1" max="{{ item.stock }}"
-                               class="form-control form-control-sm text-center" style="width: 60px;"
-                               onchange="this.form.submit()">
+                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="0" max="{{ item.tope }}" step="1" inputmode="numeric" title="Máximo {{ item.tope }}"
+                               class="form-control form-control-sm text-center" style="width: 70px;"
+                               onchange="if(this.value===''||this.value<0){this.value={{ item.cantidad }};return;} this.form.submit()">
                         <button type="submit" class="btn btn-sm btn-outline-secondary" title="Actualizar cantidad">
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11A8 8 0 1 0 6.5 17.5L4 20M4 20v-4M4 20h4"/></svg>
                         </button>
@@ -78,58 +104,66 @@
         <div class="col-12 col-lg-5">
             <div class="glass-card">
                 <h3 class="mb-3">Datos de facturación</h3>
-                <form method="POST" action="{{ url_for('checkout_carrito') }}">
+                <form method="POST" action="{{ url_for('checkout_carrito') }}" id="formCheckout" novalidate>
                     {{ form.hidden_tag() }}
 
                     <div class="mb-3">
                         {{ form.cedula.label(class="form-label") }}
-                        {{ form.cedula(class="form-control", placeholder="09XXXXXXXX") }}
+                        {{ form.cedula(class="form-control", placeholder="Ej. 1712345678", maxlength="10", inputmode="numeric", pattern="[0-9]{10}", title="10 números, sin letras", autocomplete="off", required=True, oninput="this.value=this.value.replace(/\\D/g,'')") }}
                         {% for error in form.cedula.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
 
                     <div class="mb-3">
                         {{ form.nombre.label(class="form-label") }}
-                        {{ form.nombre(class="form-control", placeholder="Tu nombre") }}
+                        {{ form.nombre(class="form-control", placeholder="Nombre y apellido", maxlength="100", required=True, autocomplete="name", oninput="this.value=this.value.replace(/[^A-Za-zÁÉÍÓÚÜÑáéíóúüñ '\\-]/g,'')") }}
                         {% for error in form.nombre.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
 
                     <div class="mb-3">
                         {{ form.correo.label(class="form-label") }}
-                        {{ form.correo(class="form-control", placeholder="tucorreo@ejemplo.com") }}
+                        {{ form.correo(class="form-control", placeholder="tucorreo@ejemplo.com", maxlength="100", type="email", required=True, autocomplete="email") }}
                         {% for error in form.correo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
 
                     <div class="mb-3">
                         {{ form.telefono.label(class="form-label") }}
-                        {{ form.telefono(class="form-control", placeholder="09XXXXXXXX") }}
+                        {{ form.telefono(class="form-control", placeholder="09XXXXXXXX", maxlength="10", inputmode="numeric", pattern="0[2-9][0-9]{7,8}", title="Celular de 10 números (09XXXXXXXX)", required=True, autocomplete="tel", oninput="this.value=this.value.replace(/\\D/g,'')") }}
                         {% for error in form.telefono.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
 
-                    <div class="mb-3">
-                        {{ form.forma_pago.label(class="form-label") }}
-                        {{ form.forma_pago(class="form-select") }}
-                        {% for error in form.forma_pago.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                    <!-- FORMA DE PAGO: dos botones en lugar del desplegable -->
+                    <label class="form-label fw-bold">Forma de pago</label>
+                    {{ form.forma_pago(class="d-none") }}
+                    <div class="metodos-pago mb-3" role="group" aria-label="Forma de pago">
+                        <button type="button" class="metodo-btn" data-metodo="Efectivo">
+                            <span class="metodo-ico">💵</span>
+                            <span>Efectivo</span>
+                        </button>
+                        <button type="button" class="metodo-btn" data-metodo="Tarjeta">
+                            <span class="metodo-ico">💳</span>
+                            <span>Tarjeta</span>
+                        </button>
                     </div>
+                    {% for error in form.forma_pago.errors %}<div class="text-danger small mb-2">{{ error }}</div>{% endfor %}
 
-                    <!-- EFECTIVO: monto con el que paga y vuelto en vivo -->
-                    <div id="bloqueEfectivo" class="mb-3 p-3 rounded" style="background: rgba(25,135,84,.07); border: 1px dashed #198754;">
-                        {{ form.efectivo_recibido.label(class="form-label fw-bold") }}
-                        <div class="input-group">
+                    <!-- EFECTIVO: solo aparece al elegir Efectivo -->
+                    <div id="bloqueEfectivo" class="panel-pago mb-3 d-none">
+                        <label class="form-label fw-bold mb-2" for="efectivo_recibido">¿Con cuánto paga?</label>
+                        <div class="input-group input-group-lg">
                             <span class="input-group-text">$</span>
-                            {{ form.efectivo_recibido(class="form-control", placeholder="Ej: 20.00", inputmode="decimal", autocomplete="off") }}
+                            {{ form.efectivo_recibido(class="form-control", placeholder="0.00", inputmode="decimal", autocomplete="off", maxlength="9", oninput="this.value=this.value.replace(/[^0-9.,]/g,'')") }}
                         </div>
-                        <div class="form-text">El vuelto se verá en la factura. Si lo dejas vacío se toma como pago exacto.</div>
                     </div>
 
-                    <!-- TARJETA: se despliega solo al elegir Tarjeta -->
-                    <div id="bloqueTarjeta" class="mb-3 p-3 rounded d-none" style="background: rgba(13,110,253,.06); border: 1px dashed #0d6efd;">
+                    <!-- TARJETA: solo aparece al elegir Tarjeta -->
+                    <div id="bloqueTarjeta" class="panel-pago mb-3 d-none">
                         <div class="mb-2">
                             {{ form.tarjeta_tipo.label(class="form-label") }}
                             {{ form.tarjeta_tipo(class="form-select") }}
                         </div>
                         <div class="mb-2">
                             {{ form.tarjeta_titular.label(class="form-label") }}
-                            {{ form.tarjeta_titular(class="form-control", placeholder="Como aparece en la tarjeta", autocomplete="cc-name") }}
+                            {{ form.tarjeta_titular(class="form-control", placeholder="Como aparece en la tarjeta", autocomplete="cc-name", maxlength="60", oninput="this.value=this.value.replace(/[0-9]/g,'')") }}
                         </div>
                         <div class="mb-2">
                             {{ form.tarjeta_numero.label(class="form-label") }}
@@ -186,14 +220,25 @@
     const marca     = document.getElementById('marcaTarjeta');
     if (!selPago) return;
 
+    const botones  = document.querySelectorAll('.metodo-btn');
+    const inEfect  = document.getElementById('efectivo_recibido');
+
     function alternar() {
         const tarjeta = selPago.value === 'Tarjeta';
         bTarjeta.classList.toggle('d-none', !tarjeta);
         bEfectivo.classList.toggle('d-none', tarjeta);
+        botones.forEach(b => b.classList.toggle('activo', b.dataset.metodo === selPago.value));
+        // El monto en efectivo no se envía cuando se paga con tarjeta
+        inEfect.disabled = tarjeta;
         ['tarjeta_titular', 'tarjeta_numero', 'tarjeta_vencimiento', 'tarjeta_cvv'].forEach(id => {
             document.getElementById(id).required = tarjeta;
         });
     }
+
+    botones.forEach(b => b.addEventListener('click', () => {
+        selPago.value = b.dataset.metodo;
+        alternar();
+    }));
 
     function detectarMarca(n) {
         if (/^4/.test(n)) return 'Visa';
@@ -217,6 +262,19 @@
 
     selPago.addEventListener('change', alternar);
     alternar();
+
+    // Evita facturar dos veces si el cliente hace doble clic en "Finalizar compra"
+    const formCheckout = document.getElementById('formCheckout');
+    if (formCheckout) {
+        formCheckout.addEventListener('submit', function (e) {
+            if (!formCheckout.checkValidity()) { e.preventDefault(); formCheckout.reportValidity(); return; }
+            const btn = formCheckout.querySelector('[type=submit]');
+            if (btn.dataset.enviado) { e.preventDefault(); return; }
+            btn.dataset.enviado = '1';
+            btn.value = 'Procesando...';
+            btn.classList.add('disabled');
+        });
+    }
 })();
 </script>
 

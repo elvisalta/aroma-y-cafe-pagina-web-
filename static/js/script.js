@@ -81,7 +81,13 @@ document.querySelectorAll('.contador-cantidad').forEach(contador => {
     const input = contador.querySelector('.cantidad');
 
     contador.querySelector('.btn-mas').addEventListener('click', () => {
-        input.value = parseInt(input.value) + 1;
+        // Tope: el stock del producto (atributo max) y nunca más de 100 por compra
+        const tope = Math.min(parseInt(input.max) || 1, 100);
+        if (parseInt(input.value) < tope) {
+            input.value = parseInt(input.value) + 1;
+        } else if (window.mostrarToastCarrito) {
+            window.mostrarToastCarrito('Solo hay ' + tope + ' unidad(es) disponibles de este producto.', 'info');
+        }
     });
 
     contador.querySelector('.btn-menos').addEventListener('click', () => {

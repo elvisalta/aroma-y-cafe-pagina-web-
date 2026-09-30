@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Email, Optional
+from validaciones import v_cedula, v_nombre_persona, v_telefono, v_correo_largo
+from forms.campos import limpiar, minusculas
 
 
 class CheckoutForm(FlaskForm):
@@ -10,22 +12,27 @@ class CheckoutForm(FlaskForm):
     """
     cedula = StringField(
         'Cédula o C.I.',
-        validators=[DataRequired(message="La cédula es obligatoria.")]
+        filters=[lambda v: v.strip() if isinstance(v, str) else v],
+        validators=[DataRequired(message="La cédula es obligatoria."), v_cedula]
     )
     nombre = StringField(
         'Nombre completo',
-        validators=[DataRequired(message="El nombre es obligatorio.")]
+        filters=[limpiar],
+        validators=[DataRequired(message="El nombre es obligatorio."), v_nombre_persona]
     )
     correo = StringField(
         'Correo',
+        filters=[minusculas],
         validators=[
             DataRequired(message="El correo es obligatorio."),
-            Email(message="Correo no válido.")
+            Email(message="Correo no válido."),
+            v_correo_largo
         ]
     )
     telefono = StringField(
         'Teléfono',
-        validators=[DataRequired(message="El teléfono es obligatorio.")]
+        filters=[lambda v: v.strip() if isinstance(v, str) else v],
+        validators=[DataRequired(message="El teléfono es obligatorio."), v_telefono]
     )
     forma_pago = SelectField(
         'Forma de pago',

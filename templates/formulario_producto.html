@@ -8,7 +8,7 @@
         
         <div class="mb-3">
             {{ form.nombre.label(class="form-label") }}
-            {{ form.nombre(class="form-control") }}
+            {{ form.nombre(class="form-control", maxlength="100", required=True) }}
             {% for error in form.nombre.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
@@ -16,7 +16,7 @@
 
         <div class="mb-3">
             {{ form.descripcion.label(class="form-label") }}
-            {{ form.descripcion(class="form-control") }}
+            {{ form.descripcion(class="form-control", maxlength="50", required=True, placeholder="Ej. Bebidas, Postres") }}
             {% for error in form.descripcion.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
@@ -24,7 +24,7 @@
 
         <div class="mb-3">
             {{ form.precio.label(class="form-label") }}
-            {{ form.precio(class="form-control") }}
+            {{ form.precio(class="form-control", type="number", step="0.01", min="0.01", max="9999.99", required=True) }}
             {% for error in form.precio.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
@@ -32,8 +32,22 @@
 
         <div class="mb-3">
             {{ form.stock.label(class="form-label") }}
-            {{ form.stock(class="form-control") }}
+            {{ form.stock(class="form-control", type="number", step="1", min="0", max="100000", required=True) }}
             {% for error in form.stock.errors %}
+                <div class="text-danger small">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <div class="mb-3 form-check">
+            {{ form.en_promocion(class="form-check-input", id="chk_promo") }}
+            {{ form.en_promocion.label(class="form-check-label", for="chk_promo") }}
+        </div>
+
+        <div class="mb-3" id="bloque_precio_promo">
+            {{ form.precio_promocion.label(class="form-label") }}
+            {{ form.precio_promocion(class="form-control", type="number", step="0.01", min="0.01", max="9999.99") }}
+            <div class="form-text">Es el precio que se cobrará mientras esté en promoción. Debe ser menor al precio normal.</div>
+            {% for error in form.precio_promocion.errors %}
                 <div class="text-danger small">{{ error }}</div>
             {% endfor %}
         </div>
@@ -53,6 +67,7 @@
                 <th>Nombre</th>
                 <th>Categoría</th>
                 <th>Precio</th>
+                <th>Promoción</th>
                 <th>Stock</th>
                 <th>Acciones</th>
             </tr>
@@ -63,6 +78,13 @@
                 <td>{{ producto.nombre }}</td>
                 <td>{{ producto.categoria }}</td>
                 <td>${{ producto.precio }}</td>
+                <td>
+                    {% if producto.en_promocion and producto.precio_promocion %}
+                        <span class="badge bg-warning text-dark">En promoción: ${{ producto.precio_promocion }}</span>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>
                 <td>{{ producto.stock }}</td>
                 <td>
                     <a href="{{ url_for('editar_producto', id=producto.id) }}" class="btn btn-warning btn-sm">Editar</a>
@@ -73,4 +95,16 @@
         </tbody>
     </table>
 </div>
+
+<script>
+    // El campo del precio de promoción solo se muestra si marcas la casilla
+    (function () {
+        const chk = document.getElementById('chk_promo');
+        const bloque = document.getElementById('bloque_precio_promo');
+        if (!chk || !bloque) return;
+        function actualizar() { bloque.style.display = chk.checked ? '' : 'none'; }
+        chk.addEventListener('change', actualizar);
+        actualizar();
+    })();
+</script>
 {% endblock %}

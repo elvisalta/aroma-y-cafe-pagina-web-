@@ -31,13 +31,25 @@
     .btn-menos:active, .btn-mas:active {
         transform: scale(0.90);
     }
+
+    /* BOTÓN "VER CARRITO" (aparece después de agregar un producto) */
+    .btn-ver-carrito {
+        border: 2px solid var(--cafe-oscuro);
+        color: var(--cafe-oscuro);
+        background: transparent;
+        transition: all 0.2s ease;
+    }
+    .btn-ver-carrito:hover {
+        background: var(--cafe-oscuro);
+        color: #fff;
+    }
 </style>
 
 <!-- BANNER SUPERIOR UNIFICADO CON LA NUEVA FOTO Y LETRAS BLANCAS RESALTADAS -->
 <section class="page-hero">
     <div class="container py-3 text-center">
         <h1>Nuestro Menú</h1>
-        <p>Explora nuestra variedad de cafés especiales, bebidas artesanales y deliciosos postres recién horneados en un ambiente pensado para disfrutar.</p>
+        <p>Cafés, jugos naturales, bizcochos y postres. Agrega lo que quieras al carrito.</p>
     </div>
 </section>
 
@@ -57,6 +69,9 @@
 
                     <!-- Contenedor rígido de la imagen -->
                     <div style="height: 180px; width: 100%; background-color: #f8f9fa; overflow: hidden;" class="position-relative">
+                        {% if producto.en_promocion %}
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2" style="z-index:2;">PROMO</span>
+                        {% endif %}
                         {% if producto.imagen and producto.imagen.strip() != "" %}
                             <img
                                 src="{{ url_for('static', filename='img/' ~ producto.imagen) }}"
@@ -94,6 +109,9 @@
                                 <span class="producto-menu-precio fs-5 fw-bold text-success">
                                     ${{ "%.2f"|format(producto.precio) }}
                                 </span>
+                                {% if producto.en_promocion %}
+                                    <span class="text-muted text-decoration-line-through small">${{ "%.2f"|format(producto.precio_normal) }}</span>
+                                {% endif %}
                             </div>
 
                             <!-- Evaluación de stock independiente por producto -->
@@ -104,13 +122,18 @@
                                     <input type="number" class="form-control form-control-sm text-center cantidad p-0" value="1" min="1" max="{{ producto.stock }}" readonly style="width: 40px; height: 30px;">
                                     <button type="button" class="btn btn-sm btn-outline-secondary btn-mas px-2">+</button>
                                 </div>
+                                {% set en_carrito = (producto.id|string) in carrito_ids %}
                                 <button
                                     type="button"
-                                    class="btn btn-comprar btn-agregar-carrito w-100 mt-2 fw-bold"
+                                    class="btn btn-comprar btn-agregar-carrito w-100 mt-2 fw-bold {% if en_carrito %}d-none{% endif %}"
                                     data-id="{{ producto.id }}"
                                 >
                                     <span class="texto-boton">Agregar al carrito</span>
                                 </button>
+                                <a href="{{ url_for('ver_carrito') }}"
+                                   class="btn btn-ver-carrito w-100 mt-2 fw-bold {% if not en_carrito %}d-none{% endif %}">
+                                    Ver carrito
+                                </a>
                             {% else %}
                                 <!-- SI NO HAY STOCK: Oculta la barra y muestra ÚNICAMENTE el botón rojo AGOTADO -->
                                 <span class="badge bg-danger text-white fw-bold w-100 py-2 fs-6 text-uppercase shadow-sm d-block text-center">
@@ -154,7 +177,18 @@
     document.querySelectorAll('.producto-menu-card').forEach(function (tarjeta) {
         const boton = tarjeta.querySelector('.btn-agregar-carrito');
         const contador = tarjeta.querySelector('.contador-cantidad');
+        const verCarrito = tarjeta.querySelector('.btn-ver-carrito');
         if (!boton) return;
+
+        // Si cambia la cantidad con - o +, vuelve el botón "Agregar al carrito"
+        if (contador && verCarrito) {
+            contador.querySelectorAll('.btn-menos, .btn-mas').forEach(function (b) {
+                b.addEventListener('click', function () {
+                    verCarrito.classList.add('d-none');
+                    boton.classList.remove('d-none');
+                });
+            });
+        }
 
         boton.addEventListener('click', function () {
             const productoId = boton.getAttribute('data-id');
@@ -176,6 +210,9 @@
                 if (datos.ok) {
                     mostrarToastCarrito(datos.mensaje, 'success');
                     actualizarContadorCarrito(datos.carrito_cantidad);
+                    // El botón se cambia por "Ver carrito"
+                    boton.classList.add('d-none');
+                    if (verCarrito) verCarrito.classList.remove('d-none');
                 } else {
                     mostrarToastCarrito(datos.mensaje || 'No se pudo agregar el producto.', 'danger');
                 }

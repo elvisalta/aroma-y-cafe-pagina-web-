@@ -1,22 +1,26 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, EmailField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
+from validaciones import v_cedula_admin, v_nombre_persona, v_telefono, v_correo_largo
+from forms.campos import limpiar, minusculas
+
 
 class ClienteForm(FlaskForm):
-    cedula = StringField('Cédula', validators=[
+    cedula = StringField('Cédula', filters=[lambda v: v.strip() if isinstance(v, str) else v], validators=[
         DataRequired(message="La cédula es obligatoria."),
-        Length(min=10, max=13, message="La cédula debe tener entre 10 y 13 dígitos.")
+        v_cedula_admin
     ])
-    nombre = StringField('Nombre del Cliente', validators=[
+    nombre = StringField('Nombre del Cliente', filters=[limpiar], validators=[
         DataRequired(message="El nombre es obligatorio."),
-        Length(min=3, max=100, message="Debe tener entre 3 y 100 caracteres.")
+        v_nombre_persona
     ])
-    correo = EmailField('Correo Electrónico', validators=[
+    correo = EmailField('Correo Electrónico', filters=[minusculas], validators=[
         DataRequired(message="El correo es obligatorio."),
-        Email(message="Ingrese un correo electrónico válido.")
+        Email(message="Ingrese un correo electrónico válido."),
+        v_correo_largo
     ])
-    telefono = StringField('Teléfono', validators=[
+    telefono = StringField('Teléfono', filters=[lambda v: v.strip() if isinstance(v, str) else v], validators=[
         DataRequired(message="El teléfono es obligatorio."),
-        Length(min=7, max=15, message="Ingrese un número de teléfono válido.")
+        v_telefono
     ])
     submit = SubmitField('Guardar')

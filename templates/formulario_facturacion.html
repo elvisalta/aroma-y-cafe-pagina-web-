@@ -1,45 +1,103 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+    .tabla-detalle-factura { max-height: 45vh; overflow-y: auto; }
+    .tabla-detalle-factura thead th { position: sticky; top: 0; background: #f8f9fa; }
+    @media print {
+        .tabla-detalle-factura { max-height: none !important; overflow: visible !important; }
+        thead { display: table-header-group; }
+        tr { page-break-inside: avoid; }
+    }
+</style>
 <div class="container mt-4">
     <h2>Módulo de Facturación</h2>
     
-    <form method="POST" action="" class="mb-4 p-3 border rounded bg-light">
+    <form method="POST" action="" class="mb-4 p-3 border rounded bg-light" id="formFactura" novalidate>
         {{ form.hidden_tag() }}
-        
-        <div class="mb-3">
-            {{ form.cliente.label(class="form-label") }}
-            {{ form.cliente(class="form-select") }}
-            {% for error in form.cliente.errors %}
-                <div class="text-danger small">{{ error }}</div>
-            {% endfor %}
+        <div class="row g-3">
+            <div class="col-md-8">
+                {{ form.cliente.label(class="form-label") }}
+                {{ form.cliente(class="form-select") }}
+                {% for error in form.cliente.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="col-md-4">
+                {{ form.forma_pago.label(class="form-label") }}
+                {{ form.forma_pago(class="form-select") }}
+                {% for error in form.forma_pago.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
         </div>
 
-        <div class="mb-3">
-            {{ form.producto.label(class="form-label") }}
-            {{ form.producto(class="form-select") }}
-            {% for error in form.producto.errors %}
-                <div class="text-danger small">{{ error }}</div>
-            {% endfor %}
+        <h6 class="mt-4 mb-2">Productos de la factura</h6>
+        <div class="table-responsive">
+            <table class="table table-sm align-middle bg-white">
+                <thead><tr><th>Producto</th><th style="width:130px">Cantidad</th><th class="text-end" style="width:110px">Subtotal</th><th style="width:50px"></th></tr></thead>
+                <tbody id="lineas"></tbody>
+            </table>
         </div>
-
-        <div class="mb-3">
-            {{ form.cantidad.label(class="form-label") }}
-            {{ form.cantidad(class="form-control") }}
-            {% for error in form.cantidad.errors %}
-                <div class="text-danger small">{{ error }}</div>
-            {% endfor %}
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-3" id="btnAgregarLinea">+ Agregar producto</button>
+        <div class="d-flex justify-content-between align-items-center border-top pt-2 mb-3">
+            <span class="fw-bold">Total estimado (sin IVA)</span>
+            <span class="fs-5 fw-bold text-success" id="totalEstimado">$0.00</span>
         </div>
-
-        <div class="mb-3">
-            {{ form.forma_pago.label(class="form-label") }}
-            {{ form.forma_pago(class="form-select") }}
-            {% for error in form.forma_pago.errors %}
-                <div class="text-danger small">{{ error }}</div>
-            {% endfor %}
-        </div>
-
         {{ form.submit(class="btn btn-success") }}
     </form>
+    <script>
+    (function () {
+        const CATALOGO = {{ catalogo|tojson }};
+        const cuerpo = document.getElementById('lineas');
+        const totalEl = document.getElementById('totalEstimado');
+
+        function recalcular() {
+            let total = 0;
+            cuerpo.querySelectorAll('tr').forEach(function (tr) {
+                const sel = tr.querySelector('select');
+                const inp = tr.querySelector('input');
+                const prod = CATALOGO.find(p => String(p.id) === sel.value);
+                const tope = prod ? Math.min(prod.stock, 100) : 1;
+                inp.max = tope;
+                let c = parseInt(inp.value, 10);
+                if (isNaN(c) || c < 1) c = 1;
+                if (c > tope) c = Math.max(tope, 1);
+                inp.value = c;
+                const sub = prod ? Math.round(prod.precio * c * 100) / 100 : 0;
+                tr.querySelector('.sub').textContent = '$' + sub.toFixed(2);
+                total += sub;
+            });
+            totalEl.textContent = '$' + total.toFixed(2);
+        }
+
+        function agregarLinea() {
+            const tr = document.createElement('tr');
+            const opciones = CATALOGO.filter(p => p.stock > 0).map(function (p) {
+                return '<option value="' + p.id + '">' + p.nombre.replace(/</g, '&lt;') +
+                       ' ($' + p.precio.toFixed(2) + ' · stock ' + p.stock + ')</option>';
+            }).join('');
+            tr.innerHTML =
+                '<td><select name="producto_id[]" class="form-select form-select-sm" required>' + opciones + '</select></td>' +
+                '<td><input type="number" name="cantidad[]" class="form-control form-control-sm" value="1" min="1" step="1" required></td>' +
+                '<td class="text-end sub">$0.00</td>' +
+                '<td><button type="button" class="btn btn-sm btn-outline-danger quitar" title="Quitar">&times;</button></td>';
+            cuerpo.appendChild(tr);
+            recalcular();
+        }
+
+        cuerpo.addEventListener('input', recalcular);
+        cuerpo.addEventListener('change', recalcular);
+        cuerpo.addEventListener('click', function (e) {
+            if (e.target.classList.contains('quitar') && cuerpo.children.length > 1) {
+                e.target.closest('tr').remove();
+                recalcular();
+            }
+        });
+        document.getElementById('btnAgregarLinea').addEventListener('click', agregarLinea);
+        document.getElementById('formFactura').addEventListener('submit', function (e) {
+            const btn = this.querySelector('[type=submit]');
+            if (btn.dataset.enviado) { e.preventDefault(); return; }
+            btn.dataset.enviado = '1';
+        });
+        if (CATALOGO.some(p => p.stock > 0)) agregarLinea();
+    })();
+    </script>
 
     <hr class="my-4">
 
@@ -131,6 +189,7 @@
         {% endif %}
 
         <!-- Tabla de productos comprados en esta factura -->
+        <div class="tabla-detalle-factura table-responsive">
         <table class="table table-sm table-bordered bg-white mt-3 mb-3">
             <thead class="table-light">
                 <tr>
